@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 // })->middleware('auth:sanctum');
 
 Route::get('/user', function (Request $request) {
-    return 'XXX.Videos.com';
+    return 'o pai ta on                                  line';
 });
 
 
