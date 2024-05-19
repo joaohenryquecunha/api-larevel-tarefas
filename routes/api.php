@@ -17,7 +17,7 @@ Route::get('/user', function (Request $request) {
 
 
 #LOGIN
-Route::post('/login', [LoginController::class, 'login'])->name('login');
+Route::post('/login', [LoginController::class, 'login']);
 
 
 #USER
@@ -29,7 +29,7 @@ Route::apiResource('users', UserController::class);
 
     #TASK
     Route::apiResource('tarefas', TarefaController::class);
-    
+
     
     #SUBTASK
     Route::apiResource('subtarefas', SubtarefaController::class);
