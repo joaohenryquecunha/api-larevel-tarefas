@@ -12,9 +12,10 @@ class TarefaController extends Controller
      */
     public function index()
     {
-        $tarefas = Tarefa::paginate();
+        $tarefas = Tarefa::with('subtarefas')->orderBy('created_at', 'DESC')->get();
         return response()->json($tarefas);
     }
+    
 
     /**
      * Store a newly created resource in storage.
@@ -29,7 +30,11 @@ class TarefaController extends Controller
 
         $tarefa = Tarefa::create($validatedData);
 
-        return response()->json(['message' => 'Sucessful created task', $tarefa], 201);
+        return response()->json([
+            'message' => 'Sucessful created task',
+            'status' => 'success',
+             $tarefa
+            ],201);
     }
 
     /**
@@ -49,6 +54,7 @@ class TarefaController extends Controller
             'title' => 'sometimes|string|max:255',
             'description' => 'sometimes|string|max:1000',
             'due_date' => 'sometimes|date|after_or_equal:today',
+            'status' => 'sometimes|required|in:pending,completed',
         ]);
 
         $tarefa->update(array_filter($validatedData));
@@ -61,7 +67,10 @@ class TarefaController extends Controller
      */
     public function destroy(Tarefa $tarefa)
     {
-        Tarefa::destroy($tarefa);
-        return response()->json(['message' => 'Successful deleted task'], 204);
+        Tarefa::destroy($tarefa->id);
+        return response()->json([
+            'message' => 'Successful deleted task',
+            'status' => 'success'
+        ], 200);
     }
 }

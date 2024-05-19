@@ -11,9 +11,10 @@ class SubtarefaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Tarefa $tarefa)
+    public function index()
     {
-        return response()->json($tarefa->subtarefas);
+        $subtarefa = Subtarefa::orderBy('created_at', 'desc')->paginate();
+        return response()->json($subtarefa);
     }
 
     /**
@@ -29,7 +30,11 @@ class SubtarefaController extends Controller
 
         $subtarefa = $tarefa->subtarefas()->create($request->all());
 
-        return response()->json($subtarefa, 201);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Subtarefa criada com sucesso!',
+            $subtarefa], 
+            201);
     }
 
     /**
@@ -53,7 +58,7 @@ class SubtarefaController extends Controller
 
         $subtarefa->update($request->all());
 
-        return response()->json($subtarefa);
+        return response()->json(['message' => 'Successful updated subtask', 'subtarefa' => $subtarefa], 200);
     }
 
     /**
