@@ -33,13 +33,21 @@ Route::apiResource('users', UserController::class);
     
     #SUBTASK
     Route::apiResource('subtarefas', SubtarefaController::class);
-    
-    Route::group(['prefix' => 'tarefas/{tarefa}'], function () {
-        Route::get('/subtarefas', [SubtarefaController::class, 'index']);
-        Route::post('/subtarefas', [SubtarefaController::class, 'store']);
-        Route::put('/subtarefas/{subtarefa}', [SubtarefaController::class, 'update']);
-        Route::delete('/subtarefas/{subtarefa}', [SubtarefaController::class, 'delete']);
+
+    Route::group(['prefix' => 'tarefas'], function () {
+        Route::get('/{tarefa}/subtarefas', [SubtarefaController::class, 'index']);
+        Route::post('/{tarefa}/subtarefas', [SubtarefaController::class, 'store']);
+        Route::put('/{tarefa}/subtarefas/{subtarefa}', [SubtarefaController::class, 'update']);
+        Route::delete('/{tarefa}/subtarefas/{subtarefa}', [SubtarefaController::class, 'destroy']);
     });
+    
+    
+    // Route::group(['prefix' => 'tarefas/{tarefa}'], function () {
+    //     Route::get('/subtarefas', [SubtarefaController::class, 'index']);
+    //     Route::post('/subtarefas', [SubtarefaController::class, 'store']);
+    //     Route::put('/subtarefas/{subtarefa}', [SubtarefaController::class, 'update']);
+    //     Route::delete('/subtarefas/{subtarefa}', [SubtarefaController::class, 'delete']);
+    // });
 // });
 
 

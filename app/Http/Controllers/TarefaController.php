@@ -10,9 +10,21 @@ class TarefaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $tarefas = Tarefa::with('subtarefas')->orderBy('created_at', 'DESC')->get();
+        $query = Tarefa::query();
+
+        $type = $request->input('type', 0);
+    
+        if ($type == 1) {
+            $today = now()->toDateString();
+            $query->whereDate('due_date', $today);
+        } else if ($type == 2) {
+            $today = now()->toDateString();
+            $query->whereDate('due_date', '<', $today);
+        }
+    
+        $tarefas = $query->with('subtarefas')->orderBy('created_at', 'DESC')->get();
         return response()->json($tarefas);
     }
     
