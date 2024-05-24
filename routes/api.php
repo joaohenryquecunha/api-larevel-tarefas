@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 // })->middleware('auth:sanctum');
 
 Route::get('/user', function (Request $request) {
-    return 'XXX.Videos.com';
+    return 'Voce chegou ao seu destino!';
 });
 
 
@@ -25,7 +25,7 @@ Route::apiResource('users', UserController::class);
 
 
 
-// Route::middleware(['auth:sanctum'])->group(function () {
+Route::middleware(['auth:sanctum'])->group(function () {
 
     #TASK
     Route::apiResource('tarefas', TarefaController::class);
@@ -41,13 +41,6 @@ Route::apiResource('users', UserController::class);
         Route::delete('/{tarefa}/subtarefas/{subtarefa}', [SubtarefaController::class, 'destroy']);
     });
     
-    
-    // Route::group(['prefix' => 'tarefas/{tarefa}'], function () {
-    //     Route::get('/subtarefas', [SubtarefaController::class, 'index']);
-    //     Route::post('/subtarefas', [SubtarefaController::class, 'store']);
-    //     Route::put('/subtarefas/{subtarefa}', [SubtarefaController::class, 'update']);
-    //     Route::delete('/subtarefas/{subtarefa}', [SubtarefaController::class, 'delete']);
-    // });
-// });
+});
 
 

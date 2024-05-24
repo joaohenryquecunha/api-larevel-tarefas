@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Tarefa;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TarefaController extends Controller
 {
@@ -12,7 +13,8 @@ class TarefaController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Tarefa::query();
+        $user = Auth::user();
+        $query = Tarefa::where('user_id', $user->id);
 
         $type = $request->input('type', 0);
     
@@ -22,12 +24,13 @@ class TarefaController extends Controller
         } else if ($type == 2) {
             $today = now()->toDateString();
             $query->whereDate('due_date', '<', $today);
+        }else if ($type == 3) {
+            $query->where('status', 'completed');
         }
     
         $tarefas = $query->with('subtarefas')->orderBy('created_at', 'DESC')->get();
         return response()->json($tarefas);
     }
-    
 
     /**
      * Store a newly created resource in storage.
@@ -40,13 +43,15 @@ class TarefaController extends Controller
             'due_date' => 'required|date|after_or_equal:today',
         ]);
 
+        $validatedData['user_id'] = Auth::id();
+
         $tarefa = Tarefa::create($validatedData);
 
         return response()->json([
-            'message' => 'Sucessful created task',
+            'message' => 'Successful created task',
             'status' => 'success',
-             $tarefa
-            ],201);
+            'tarefa' => $tarefa
+        ], 201);
     }
 
     /**
@@ -54,6 +59,7 @@ class TarefaController extends Controller
      */
     public function show(Tarefa $tarefa)
     {
+        $this->authorizeUser($tarefa);
         return response()->json($tarefa);
     }
 
@@ -62,6 +68,8 @@ class TarefaController extends Controller
      */
     public function update(Request $request, Tarefa $tarefa)
     {
+        $this->authorizeUser($tarefa);
+
         $validatedData = $request->validate([
             'title' => 'sometimes|string|max:255',
             'description' => 'sometimes|string|max:1000',
@@ -71,7 +79,7 @@ class TarefaController extends Controller
 
         $tarefa->update(array_filter($validatedData));
 
-        return response()->json(['message' => 'Successful updated task', $tarefa],200);
+        return response()->json(['message' => 'Successful updated task', 'tarefa' => $tarefa], 200);
     }
 
     /**
@@ -79,10 +87,22 @@ class TarefaController extends Controller
      */
     public function destroy(Tarefa $tarefa)
     {
-        Tarefa::destroy($tarefa->id);
+        $this->authorizeUser($tarefa);
+
+        $tarefa->delete();
         return response()->json([
             'message' => 'Successful deleted task',
             'status' => 'success'
         ], 200);
+    }
+
+    /**
+     * Check if the authenticated user is authorized to perform actions on the task.
+     */
+    private function authorizeUser(Tarefa $tarefa)
+    {
+        if ($tarefa->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
     }
 }
