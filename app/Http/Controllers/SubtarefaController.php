@@ -48,26 +48,49 @@ class SubtarefaController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Subtarefa $subtarefa)
+    public function update(Request $request, $tarefaId, $subtarefaId)
     {
+        $tarefa = Tarefa::find($tarefaId);
+    
+        if (!$tarefa) {
+            return response()->json(['message' => 'Task not found'], 404);
+        }
+    
+        $subtarefa = $tarefa->subtarefas()->find($subtarefaId);
+    
+        if (!$subtarefa) {
+            return response()->json(['message' => 'Subtask not found'], 404);
+        }
+    
         $request->validate([
-            'title' => 'sometimes|required|string|max:255',
-            'description' => 'sometimes|required|string',
+            'title' => 'sometimes|string|max:255',
+            'description' => 'sometimes|string',
             'status' => 'sometimes|required|in:pending,completed',
         ]);
-
+    
         $subtarefa->update($request->all());
-
-        return response()->json(['message' => 'Successful updated subtask', 'subtarefa' => $subtarefa], 200);
+    
+        return response()->json(['message' => 'Successfully updated subtask', 'subtarefa' => $subtarefa], 200);
     }
+    
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Subtarefa $subtarefa)
-    {
-        $subtarefa->delete();
+    public function destroy($tarefaId, $subtarefaId)
+{
+    // Use uma única consulta para buscar a subtarefa diretamente
+    $subtarefa = Subtarefa::where('task_id', $tarefaId)->find($subtarefaId);
 
-        return response()->json(['message' => 'Sucessful deleted subtask'], 204);
+    if (!$subtarefa) {
+        return response()->json(['message' => 'Task or subtask not found'], 404);
     }
+
+    $subtarefa->delete();
+
+    return response()->json([
+        'message' => 'Successfully deleted subtask',
+        'status' => 'success'
+    ], 200);
+}
 }
